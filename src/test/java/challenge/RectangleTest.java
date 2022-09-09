@@ -43,7 +43,7 @@ public class RectangleTest {
         Rectangle rect1 = new Rectangle(0, 1, 10, 5);
         Rectangle rect2 = new Rectangle(4, 0, 6, 2);
 
-        Assert.assertTrue(rect2.isContained(rect1));
+        Assert.assertTrue(rect2.isAdjacent(rect1));
     }
 
     @Test
@@ -55,7 +55,7 @@ public class RectangleTest {
         Rectangle rect1 = new Rectangle(0, 1, 10, 5);
         Rectangle rect2 = new Rectangle(4, 1, 6, 2);
 
-        Assert.assertTrue(rect2.isContained(rect1));
+        Assert.assertTrue(rect2.isAdjacent(rect1));
     }
 
     @Test
@@ -68,7 +68,32 @@ public class RectangleTest {
         Rectangle rect1 = new Rectangle(0, 1, 10, 5);
         Rectangle rect2 = new Rectangle(4, 0, 5, 2);
 
-        Assert.assertFalse(rect2.isContained(rect1));
+        Assert.assertFalse(rect2.isAdjacent(rect1));
+    }
+
+    @Test
+    public void hasIntersectingLinesTrue() {
+        //  xxxxxxxxxxx
+        //  x         x
+        //  x   xxxxx x
+        //  xxxxxxxxxxx
+        //      xxxxx
+        Rectangle rect1 = new Rectangle(0, 1, 10, 5);
+        Rectangle rect2 = new Rectangle(4, 0, 5, 2);
+
+        Assert.assertTrue(rect1.hasIntersectingLines(rect2));
+    }
+
+    @Test
+    public void hasIntersectingLinesFalse() {
+        //  xxxxxxxxxxx
+        //  x   xxxxx x
+        //  x   xxxxx x
+        //  xxxxxxxxxxx
+        Rectangle rect1 = new Rectangle(0, 1, 10, 5);
+        Rectangle rect2 = new Rectangle(4, 2, 5, 2);
+
+        Assert.assertFalse(rect1.hasIntersectingLines(rect2));
     }
 
     @Test
