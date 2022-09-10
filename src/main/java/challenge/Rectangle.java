@@ -2,7 +2,9 @@ package challenge;
 
 import lombok.Data;
 
-import java.util.Arrays;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Data
 class Rectangle {
@@ -40,45 +42,52 @@ class Rectangle {
      * segment on a side of rectangle A exists as a set of points on some side of Rectangle B
      */
     boolean isAdjacent(Rectangle r) {
-        return (this.x == r.x || this.y == r.y || this.x + this.width == r.x + r.width ||
-                this.y + this.height == r.y + r.height);
+        return this.getIntersectionPoints(r).size() > 2;
     }
 
     /**
-     * Determine whether two rectangles have one or more intersecting lines, the lines must cross each-other.
+     * Determine whether two rectangles have one or more intersecting lines,
+     * the lines must cross each-other.
      */
-//    boolean hasIntersectingLines(Rectangle r) {
-//        //check if an intersection is possible with the two triangles
-//        //first check to see if rectangles are completely left or right of each other
-//        //next check to see if rectangles are completely above or below each other
-//        if ((Math.min(this.x + this.width, r.x + r.width) - Math.max(this.x, r.x)) < 0 ||
-//                Math.min(this.y + this.height, r.y + r.height) - Math.max(this.y, r.y) < 0) {
-//
-//        }
-//    }
+    boolean hasIntersectingLines(Rectangle r) {
+        //check if an intersection is possible with the two triangles
+        //first check to see if rectangles are completely left or right of each other
+        //next check to see if rectangles are completely above or below each other
+        return !((Math.min(this.x + this.width, r.x + r.width) - Math.max(this.x, r.x)) < 0 ||
+                Math.min(this.y + this.height, r.y + r.height) - Math.max(this.y, r.y) < 0);
+    }
 
     /**
      * Produce a result identifying the points of intersection
      */
-    Point[] getIntersectionPoints(Rectangle r) {
-        int[] x_axis_points = {this.x, this.x + this.width, r.x, r.x + r.width};
-        int[] y_axis_points = {this.y, this.y + this.height, r.y, r.y + r.height};
+    List<Point> getIntersectionPoints(Rectangle r) {
+        Map<Point, Integer> pointMap = new HashMap<>();
 
-        Arrays.sort(x_axis_points);
-        Arrays.sort(y_axis_points);
+        //Add all this rectangle x,y points to map
+        IntStream.rangeClosed(this.x, this.x + this.width).forEach(e -> {
+            pointMap.merge(new Point(e, this.y), 1, Integer::sum);
+            pointMap.merge(new Point(e, this.y + this.height), 1, Integer::sum);
+        });
 
-        Point[] points = new Point[2];
+        IntStream.rangeClosed(this.y + 1, this.y + this.height - 1).forEach(e -> {
+            pointMap.merge(new Point(this.x, e), 1, Integer::sum);
+            pointMap.merge(new Point(this.x + this.width, e), 1, Integer::sum);
+        });
 
-        //2 point intersection
-        int maxDifference = Math.max(this.x + this.width, r.x + r.width) -
-                Math.min(this.x + this.width, r.x + r.width);
-        int minDifference = Math.max(this.x, r.x) - Math.min(this.x, r.x);
+        //Add all check rectangle x,y points to map
+        IntStream.rangeClosed(r.x, r.x + r.width).forEach(e -> {
+            pointMap.merge(new Point(e, r.y), 1, Integer::sum);
+            pointMap.merge(new Point(e, r.y + r.height), 1, Integer::sum);
+        });
 
-        if (this.x < r.x && this.y + this.height < r.y + r.height) {
-            points[0] = new Point(x_axis_points[1], y_axis_points[1]);
-            points[1] = new Point(x_axis_points[2], y_axis_points[1]);
-        }
+        IntStream.rangeClosed(r.y + 1, r.y + r.height - 1).forEach(e -> {
+            pointMap.merge(new Point(r.x, e), 1, Integer::sum);
+            pointMap.merge(new Point(r.x + r.width, e), 1, Integer::sum);
+        });
 
-        return points;
+        return pointMap.entrySet().stream()
+                .filter(e -> e.getValue() > 1)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 }

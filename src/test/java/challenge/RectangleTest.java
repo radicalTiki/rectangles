@@ -3,6 +3,8 @@ package challenge;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.List;
+
 /**
  * Points will be in order from bottom left, top left, bottom right, top right
  */
@@ -36,12 +38,12 @@ public class RectangleTest {
     @Test
     public void testIsAdjacentPartial() {
         //  xxxxxxxxxxx
-        //  x         x
         //  x   xxxxxxx
+        //  x   x     x
         //  xxxxxxxxxxx
         //      xxxxxxx
         Rectangle rect1 = new Rectangle(0, 1, 10, 5);
-        Rectangle rect2 = new Rectangle(4, 0, 6, 2);
+        Rectangle rect2 = new Rectangle(4, 0, 6, 3);
 
         Assert.assertTrue(rect2.isAdjacent(rect1));
     }
@@ -62,6 +64,7 @@ public class RectangleTest {
     public void testIsAdjacentFalse() {
         //  xxxxxxxxxxx
         //  x         x
+        //  x         x
         //  x   xxxxx x
         //  xxxxxxxxxxx
         //      xxxxx
@@ -79,7 +82,7 @@ public class RectangleTest {
         //  xxxxxxxxxxx
         //      xxxxx
         Rectangle rect1 = new Rectangle(0, 1, 10, 5);
-        Rectangle rect2 = new Rectangle(4, 0, 5, 2);
+        Rectangle rect2 = new Rectangle(4, 0, 5, 3);
 
         Assert.assertTrue(rect1.hasIntersectingLines(rect2));
     }
@@ -87,11 +90,11 @@ public class RectangleTest {
     @Test
     public void hasIntersectingLinesFalse() {
         //  xxxxxxxxxxx
-        //  x   xxxxx x
-        //  x   xxxxx x
-        //  xxxxxxxxxxx
+        //  x         x
+        //  x         x xxxxxx
+        //  xxxxxxxxxxx xxxxxx
         Rectangle rect1 = new Rectangle(0, 1, 10, 5);
-        Rectangle rect2 = new Rectangle(4, 2, 5, 2);
+        Rectangle rect2 = new Rectangle(12, 1, 5, 2);
 
         Assert.assertFalse(rect1.hasIntersectingLines(rect2));
     }
@@ -106,12 +109,9 @@ public class RectangleTest {
         Rectangle rect1 = new Rectangle(0, 1, 10, 5);
         Rectangle rect2 = new Rectangle(4, 0, 5, 2);
 
-        Point[] points = rect1.getIntersectionPoints(rect2);
+        List<Point> points = rect1.getIntersectionPoints(rect2);
 
-        System.out.println("IntersectionPoints: " + points[0] + " " + points[1]);
-        Assert.assertEquals(points[0].x, 4);
-        Assert.assertEquals(points[0].y, 1);
-        Assert.assertEquals(points[1].x, 9);
-        Assert.assertEquals(points[1].y, 1);
+        Assert.assertTrue(points.contains(new Point(4, 1)));
+        Assert.assertTrue(points.contains(new Point(9, 1)));
     }
 }
